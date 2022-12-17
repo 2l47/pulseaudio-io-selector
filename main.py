@@ -3,31 +3,14 @@
 # This script automatically adjusts the default input and output device for pulseaudio depending on what sinks (outputs) and sources (inputs) are available.
 
 import argparse
-import colorama
+from colors import *
 import os
 import pprint
 import subprocess
 import time
 
+from helpers import get_outputs, get_inputs, pactl, vr_running
 
-
-# Colorama init. A rather barebones library, but it does enough.
-from colorama import Fore
-colorama.init(autoreset=True)
-
-# Custom color declarations
-#LIGHT_GRAY = "\033[0;37m"
-DARK_GRAY = "\033[1;30m"
-LIGHT_BLUE = "\033[1;34m"
-ORANGE = "\033[38;2;255;165;0m"
-
-# Styles
-ITALIC = "\033[3m"
-
-# Color aliases
-GRAY = DARK_GRAY
-RED, GREEN = Fore.RED, Fore.GREEN
-BLUE = LIGHT_BLUE
 
 
 # Get the location of our script
@@ -68,50 +51,11 @@ inputs = [
 	"alsa_input.pci-0000_0a_00.4.analog-stereo"
 ]
 
-
-# Helper functions
-
-def pactl(args, extra=""):
-	command = f"pactl {args}{extra}"
-	print(GRAY + f"Running command: {command}")
-	try:
-		return subprocess.check_output(command, shell=True).decode("ASCII")
-	except subprocess.CalledProcessError:
-		return ""
+# This variable tracks the current secondary slave of the combined sink.
+CURRENT_COMBINED_SINK_OUTPUT = None
 
 
-# Get available sinks (outputs)
-def get_outputs():
-	result = pactl("list sinks", " | grep Name:")
-	available = result.split()
-	while "Name:" in available:
-		available.remove("Name:")
-	return available
-
-
-# Get available sources (inputs)
-def get_inputs():
-	result = pactl("list sources", " | grep Name:")
-	available = result.split()
-	while "Name:" in available:
-		available.remove("Name:")
-	return available
-
-
-# Returns whether SteamVR is running (should we switch to the headset?)
-def vr_running():
-	try:
-		return subprocess.check_output("pgrep vrmonitor", shell=True)
-	except subprocess.CalledProcessError:
-		pass
-
-
-# Main program logic - just run until terminated
-while True:
-	print(BLUE + "\nSleeping...")
-	time.sleep(1)
-	os.system("clear")
-
+def set_output_device():
 	print(BLUE + "Getting outputs...")
 	available_outputs = get_outputs()
 	print(f"Available output devices:\n{pprint.pformat(available_outputs)}")
@@ -130,8 +74,8 @@ while True:
 				pactl(f"set-sink-volume {priority} 32768")
 			break
 
-	print()
 
+def set_input_device():
 	print(BLUE + "Getting inputs...")
 	available_inputs = get_inputs()
 	print(f"Available input devices:\n{pprint.pformat(available_inputs)}")
@@ -176,6 +120,8 @@ while True:
 				pactl(f"set-source-volume {priority} 99957")
 			break
 
+
+def handle_recording():
 	# Make some applications use the "combined" sink to hear and record them
 	# Spotify and VLC are always available through the "recording.monitor" source (input)
 	# Adding Chromium for the Steam overlay means including Discord!
@@ -184,3 +130,16 @@ while True:
 	sink_inputs = pactl("list sink-inputs", rf" | grep -P 'Sink Input #\d+|application\.name' | grep -P '(?<=application\.name = \")({app_regex})(?=\")' -B1 | grep -Po '(?<=Sink Input #)\d+'")
 	for sink_input in sink_inputs.split("\n")[:-1]:
 		pactl(f"move-sink-input {sink_input} combined")
+
+
+# Main program logic - just run until terminated
+while True:
+	print(BLUE + "\nSleeping...")
+	time.sleep(1)
+	os.system("clear")
+
+	set_output_device()
+	#update_combined_sink()
+	print()
+	set_input_device()
+	handle_recording()
