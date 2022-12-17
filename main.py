@@ -9,16 +9,8 @@ import pprint
 import subprocess
 import time
 
-from helpers import get_outputs, get_inputs, pactl, vr_running
+from helpers import add_sinks, get_outputs, get_inputs, pactl, remove_sinks, vr_running
 
-
-
-# Get the location of our script
-installation_path = os.path.dirname(os.path.realpath(__file__))
-# Remove any sinks (outputs) created by pulseaudio-sinks.sh in order to avoid duplicates
-os.system(f"{installation_path}/remove-pulseaudio-sinks.sh")
-# Now add the pulseaudio sinks (outputs)
-os.system(f"{installation_path}/pulseaudio-sinks.sh")
 
 
 # Configuration
@@ -72,6 +64,12 @@ def set_output_device():
 			# If this is the Valve Index, set the volume to 50%
 			if priority == VALVE_INDEX_DP:
 				pactl(f"set-sink-volume {priority} 32768")
+			# Recreate the "combined" sink so that recordable applications output simultaneously on the correct default output device
+			# On the first run, this will remove any sinks (outputs) we've previously created, avoiding potential duplicates
+			if priority != CURRENT_COMBINED_SINK_OUTPUT:
+				remove_sinks()
+				add_sinks(priority)
+				CURRENT_COMBINED_SINK_OUTPUT = priority
 			break
 
 
