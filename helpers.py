@@ -18,6 +18,7 @@ def pactl(args, extra=""):
 
 
 def remove_sinks():
+	print(BLUE + "Removing sinks we previously created...")
 	# Still not cleaning up this line
 	pactl("list sinks", " | grep -P 'Name: (recording|combined)(\.\d+)?|Owner Module: \d+' | grep -E 'Name: (recording|combined)' -A 1 | grep -Po '(?<=Owner Module: )\d+' | xargs -n 1 pactl unload-module")
 
@@ -25,8 +26,10 @@ def remove_sinks():
 # For more details, see pulseaudio-sinks.sh in the initial commit
 def add_sinks(combined_output):
 	# Create the "recording" null sink
+	print(BLUE + "Creating the \"recording\" null sink...")
 	pactl("load-module module-null-sink sink_name=recording sink_properties=device.description=recording")
 	# Create the "combined" sink with "recording" as the primary slave and the given output as a secondary slave
+	print(BLUE + "Creating the \"combined\" sink with \"recording\" as the primary slave and \"{combined_output}\" as a secondary slave...")
 	pactl(f"load-module module-combine-sink sink_name=combined sink_properties=device.description=combined slaves=recording,{combined_output}")
 	# If you wanted your microphone to be always-on on top of "recording", you would enable this
 	#MICROPHONE = "YOUR_MICROPHONE_NAME"

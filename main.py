@@ -2,11 +2,9 @@
 
 # This script automatically adjusts the default input and output device for pulseaudio depending on what sinks (outputs) and sources (inputs) are available.
 
-import argparse
 from colors import *
 import os
 import pprint
-import subprocess
 import time
 
 from helpers import add_sinks, get_outputs, get_inputs, pactl, remove_sinks, vr_running
@@ -44,10 +42,13 @@ inputs = [
 ]
 
 # This variable tracks the current secondary slave of the combined sink.
+# Yeah it's a global this is a script shut up
+global CURRENT_COMBINED_SINK_OUTPUT
 CURRENT_COMBINED_SINK_OUTPUT = None
 
 
 def set_output_device():
+	global CURRENT_COMBINED_SINK_OUTPUT
 	print(BLUE + "Getting outputs...")
 	available_outputs = get_outputs()
 	print(f"Available output devices:\n{pprint.pformat(available_outputs)}")
@@ -55,7 +56,7 @@ def set_output_device():
 	for priority in outputs:
 		if priority in available_outputs:
 			# Set this as the default sink (output)
-			# But if VR isn't running, don't use the Valve Index mic
+			# But if VR isn't running, don't use the Valve Index speakers
 			if priority == VALVE_INDEX_DP and not vr_running():
 				print(ITALIC + ORANGE + "Not using the Valve Index speakers because SteamVR is not running.")
 				continue
@@ -79,6 +80,7 @@ def set_input_device():
 	print(f"Available input devices:\n{pprint.pformat(available_inputs)}")
 
 	# Switch the graphics card audio output from the monitor speaker to the Valve Index when VR is running
+	print(BLUE + "Configuring GPU DisplayPort audio output...")
 	if VALVE_INDEX_MIC in available_inputs and vr_running():
 		print("Valve Index mic detected, checking card profile")
 		data = pactl("list sinks", " | grep -Po '(?<=Name: |Sample Specification: |device\.profile\.name = ).*'").split("\n")
@@ -120,6 +122,7 @@ def set_input_device():
 
 
 def handle_recording():
+	print(BLUE + "Pushing applications to the combined sink...")
 	# Make some applications use the "combined" sink to hear and record them
 	# Spotify and VLC are always available through the "recording.monitor" source (input)
 	# Adding Chromium for the Steam overlay means including Discord!
@@ -132,12 +135,11 @@ def handle_recording():
 
 # Main program logic - just run until terminated
 while True:
+	set_output_device()
+	handle_recording()
+	print()
+	set_input_device()
+
 	print(BLUE + "\nSleeping...")
 	time.sleep(1)
 	os.system("clear")
-
-	set_output_device()
-	#update_combined_sink()
-	print()
-	set_input_device()
-	handle_recording()
