@@ -60,6 +60,7 @@ def set_output_device():
 			if priority == VALVE_INDEX_DP and not vr_running():
 				print(ITALIC + ORANGE + "Not using the Valve Index speakers because SteamVR is not running.")
 				continue
+			print(RED + f"Current combined sink (output): {CURRENT_COMBINED_SINK_OUTPUT}")
 			print(GREEN + f"Selecting {priority} as the default sink (output)")
 			pactl(f"set-default-sink {priority}")
 			# If this is the Valve Index, set the volume to 50%
@@ -68,6 +69,7 @@ def set_output_device():
 			# Recreate the "combined" sink so that recordable applications output simultaneously on the correct default output device
 			# On the first run, this will remove any sinks (outputs) we've previously created, avoiding potential duplicates
 			if priority != CURRENT_COMBINED_SINK_OUTPUT:
+				print(RED + f"Recreating the sink because new priority {priority} != old combined sink slave {CURRENT_COMBINED_SINK_OUTPUT}")
 				remove_sinks()
 				add_sinks(priority)
 				CURRENT_COMBINED_SINK_OUTPUT = priority
