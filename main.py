@@ -79,15 +79,27 @@ def handle_recording():
 
 
 # Main program logic - just run until terminated
-while True:
-	# Handles switching the GPU to the correct profile, ensuring that the output is actually available for the combined sink
-	handle_valve_index_card_switching()
+if __name__ == "__main__":
+	while True:
+		# Handles switching the GPU to the correct profile, ensuring that the output is actually available for the combined sink
+		handle_valve_index_card_switching()
 
-	set_output_device()
-	handle_recording()
-	print()
-	set_input_device()
+		set_output_device()
+		handle_recording()
+		print()
+		set_input_device()
 
-	print(BLUE + "\nSleeping...")
-	time.sleep(1)
-	os.system("clear")
+		print(BLUE + "\nSleeping...")
+		time.sleep(1)
+		os.system("clear")
+# from main import *
+else:
+	functions = [
+		"pactl",
+		"get_outputs", "get_inputs",
+		"set_output_device", "set_input_device",
+		"handle_valve_index_card_switching", "vr_running",
+		"remove_sinks", "add_sinks",
+		"handle_recording",
+	]
+	print(GREEN + f"Imported as library. Available functions:\n{pprint.pformat(functions)}")
