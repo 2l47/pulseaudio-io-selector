@@ -3,6 +3,7 @@
 # Helper functions
 
 from colors import *
+from definitions import *
 import subprocess
 
 
