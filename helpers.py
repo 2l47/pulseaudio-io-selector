@@ -5,6 +5,7 @@
 from colors import *
 from definitions import *
 import subprocess
+import time
 
 
 
@@ -82,12 +83,14 @@ def handle_valve_index_card_switching():
 					# We have to switch card profiles in order to get the sample rate set correctly
 					print("Incompatible sample spec detected, switching card profiles")
 					pactl("set-card-profile 0 output:hdmi-surround71-extra3") # Digital Surround 7.1 (HDMI 4) Output"
-					time.sleep(2) # Wait a moment
+					time.sleep(1) # Wait a moment
 		if not found_dp_output:
 			print("Couldn't find the DP output; swapping card to HDMI monitor to fix")
 			pactl("set-card-profile 0 output:hdmi-stereo-extra4") # Digital Stereo (HDMI 5) Output"
 		# If the Valve Index is plugged in, switch GPU audio output to it
 		pactl("set-card-profile 0 output:hdmi-stereo-extra3") # Digital Stereo (HDMI 4) Output"
+		# Wait a moment before set_output_device() tries to recreate the "combined" sink
+		time.sleep(1)
 	else:
 		# Otherwise, switch GPU audio output to the HDMI monitor
 		pactl("set-card-profile 0 output:hdmi-stereo-extra4") # "Digital Stereo (HDMI 5) Output"
