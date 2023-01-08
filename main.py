@@ -3,10 +3,13 @@
 # This script automatically adjusts the default input and output device for pulseaudio depending on what sinks (outputs) and sources (inputs) are available.
 
 from colors import *
-from definitions import *
+from definitions import bluetooth_devices, BT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
 from helpers import add_sinks, get_outputs, get_inputs, handle_valve_index_card_switching, pactl, remove_sinks, vr_running
 import os
 import pprint
+import shlex
+import subprocess
+import threading
 import time
 
 
@@ -36,6 +39,9 @@ def set_output_device():
 			# If this is the Valve Index, set the volume to 50%
 			if priority == VALVE_INDEX_DP:
 				pactl(f"set-sink-volume {priority} 32768")
+			# and 75% for my Bluetooth speaker
+			elif priority == BT_SPEAKER:
+				pactl(f"set-sink-volume {priority} 49152")
 			# Recreate the "combined" sink so that recordable applications output simultaneously on the correct default output device
 			# On the first run, this will remove any sinks (outputs) we've previously created, avoiding potential duplicates
 			if priority != CURRENT_COMBINED_SINK_OUTPUT:
@@ -78,8 +84,20 @@ def handle_recording():
 		pactl(f"move-sink-input {sink_input} combined")
 
 
+def bt_task():
+	while True:
+		for device_mac in bluetooth_devices:
+			# Using subprocess prevents us from blocking this thread
+			subprocess.Popen(shlex.split(f"bluetoothctl connect {device_mac}"))
+			# time.sleep() only blocks this thread, not the whole process
+			time.sleep(BT_INTERVAL)
+
+
 # Main program logic - just run until terminated
 if __name__ == "__main__":
+	# Spawn a thread to automatically connect to Bluetooth devices
+	t = threading.Thread(target=bt_task, args=())
+	t.start()
 	while True:
 		# Handles switching the GPU to the correct profile, ensuring that the output is actually available for the combined sink
 		handle_valve_index_card_switching()
