@@ -34,7 +34,7 @@ inputs = [
 ]
 
 # Time between attempting to connect to Bluetooth devices.
-BT_INTERVAL = 1.000
+BT_CONNECT_INTERVAL = 1.000
 
 # Bluetooth devices to try to connect to
 bluetooth_devices = [

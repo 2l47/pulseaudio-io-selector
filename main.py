@@ -3,13 +3,15 @@
 # This script automatically adjusts the default input and output device for pulseaudio depending on what sinks (outputs) and sources (inputs) are available.
 
 from colors import *
-from definitions import bluetooth_devices, BT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
+from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
 from helpers import add_sinks, get_outputs, get_inputs, handle_valve_index_card_switching, pactl, remove_sinks, vr_running
 import os
 import pprint
 import shlex
+import signal
 import subprocess
 import threading
+import _thread
 import time
 
 
@@ -18,6 +20,9 @@ import time
 # Yeah it's a global this is a script shut up
 global CURRENT_COMBINED_SINK_OUTPUT
 CURRENT_COMBINED_SINK_OUTPUT = None
+
+global should_exit
+should_exit = False
 
 
 def set_output_device():
@@ -84,21 +89,58 @@ def handle_recording():
 		pactl(f"move-sink-input {sink_input} combined")
 
 
-def bt_task():
+def bt_scan():
+	# This will block this thread until the child process exits.
+	output = subprocess.check_output("bluetoothctl scan on", shell=True)
+	# The child process shouldn't terminate on its own -- if it does, exit the program.
+	print(f"bluetoothctl scan process terminated unexpectedly, exiting! Process output:")
+	print(output.decode())
+	# Python 3.10 is required for proper signal handling.
+	"""
+	# Send SIGHUP to the main thread.
+	#_thread.interrupt_main(signal.SIGHUP)
+	"""
+	_thread.interrupt_main()
+
+
+def bt_connect():
 	while True:
 		for device_mac in bluetooth_devices:
 			# Using subprocess prevents us from blocking this thread
 			subprocess.Popen(shlex.split(f"bluetoothctl connect {device_mac}"))
 			# time.sleep() only blocks this thread, not the whole process
-			time.sleep(BT_INTERVAL)
+			time.sleep(BT_CONNECT_INTERVAL)
 
 
-# Main program logic - just run until terminated
+"""
+# Handle SIGHUP
+def sighup(signum, frame):
+	# Always "SIGHUP" but eh
+	signame = signal.Signals(signum).name
+	print(RED + f"Caught {signame}, exiting...")
+	global should_exit
+	should_exit = True
+signal.signal(signal.SIGHUP, sighup)
+"""
+# Handle SIGINT
+def sigint(signum, frame):
+	# Always "SIGINT" but eh
+	signame = signal.Signals(signum).name
+	print(RED + f"Caught {signame}, exiting...")
+	global should_exit
+	should_exit = True
+signal.signal(signal.SIGINT, sigint)
+
+
+# Main program logic - just run until terminated or an error is encountered
 if __name__ == "__main__":
-	# Spawn a thread to automatically connect to Bluetooth devices
-	t = threading.Thread(target=bt_task, args=())
+	# Spawn a thread to discover Bluetooth devices
+	t = threading.Thread(target=bt_scan, args=())
 	t.start()
-	while True:
+	# Spawn a thread to automatically connect to Bluetooth devices
+	t = threading.Thread(target=bt_connect, args=(), daemon=True)
+	t.start()
+	while not should_exit:
 		# Handles switching the GPU to the correct profile, ensuring that the output is actually available for the combined sink
 		handle_valve_index_card_switching()
 
