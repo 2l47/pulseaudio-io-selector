@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
 		print(BLUE + "\nSleeping...")
 		time.sleep(1)
-		os.system("clear")
+		print("\n" * 10)
 # from main import *
 else:
 	functions = [
