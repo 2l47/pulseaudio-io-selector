@@ -82,7 +82,7 @@ def handle_recording():
 	# Make some applications use the "combined" sink to hear and record them
 	# Spotify and VLC are always available through the "recording.monitor" source (input)
 	# Adding Chromium for the Steam overlay means including Discord!
-	applications_to_push = [r"spotify", r"VLC media player \(LibVLC \d\.\d+\.\d+\)", r"ZOOM VoiceEngine", r"Shairport Sync", r"Firefox"]
+	applications_to_push = [r"[sS]potify", r"VLC media player \(LibVLC \d\.\d+\.\d+\)", r"ZOOM VoiceEngine", r"Shairport Sync", r"Firefox"]
 	app_regex = "|".join(applications_to_push)
 	sink_inputs = pactl("list sink-inputs", rf" | grep -P 'Sink Input #\d+|application\.name' | grep -P '(?<=application\.name = \")({app_regex})(?=\")' -B1 | grep -Po '(?<=Sink Input #)\d+'")
 	for sink_input in sink_inputs.split("\n")[:-1]:
