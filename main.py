@@ -4,7 +4,7 @@
 
 from colors import *
 from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
-from helpers import add_sinks, get_outputs, get_inputs, handle_valve_index_card_switching, pactl, remove_sinks, vr_running
+from helpers import add_sinks, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, vr_running
 import os
 import pprint
 import shlex
@@ -51,6 +51,7 @@ def set_output_device():
 			# On the first run, this will remove any sinks (outputs) we've previously created, avoiding potential duplicates
 			if priority != CURRENT_COMBINED_SINK_OUTPUT:
 				print(RED + f"Recreating the sink because new priority {priority} != old combined sink slave {CURRENT_COMBINED_SINK_OUTPUT}")
+				notify("Recreating sinks; some applications may need to reconnect to pulseaudio.")
 				remove_sinks()
 				add_sinks(priority)
 				CURRENT_COMBINED_SINK_OUTPUT = priority

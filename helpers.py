@@ -4,9 +4,14 @@
 
 from colors import *
 from definitions import *
+import os
 import subprocess
 import time
 
+
+
+def notify(message):
+	os.system(f"notify-send pulseaudio-io-selector \"{message}\"")
 
 
 # Shortcut for running pactl with the provided arguments
