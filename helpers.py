@@ -65,7 +65,7 @@ def get_inputs():
 # Returns whether SteamVR is running (should we switch to the headset?)
 def vr_running():
 	try:
-		return subprocess.check_output("pgrep vrmonitor", shell=True)
+		return bool(subprocess.check_output("pgrep vrmonitor", shell=True))
 	except subprocess.CalledProcessError:
 		pass
 
@@ -73,12 +73,16 @@ def vr_running():
 def handle_valve_index_card_switching():
 	# Switch the graphics card audio output from the monitor speaker to the Valve Index when VR is running
 	print(BLUE + "Configuring GPU DisplayPort audio output...")
-	if VALVE_INDEX_MIC in get_inputs() and vr_running():
+	index_connected = VALVE_INDEX_MIC in get_inputs()
+	steamvr_running = vr_running()
+	print(BLUE + f"Valve Index mic available: {index_connected}")
+	print(BLUE + f"SteamVR running: {steamvr_running}")
+	if index_connected and steamvr_running:
 		print("Valve Index mic detected, checking card profile")
 		data = pactl("list sinks", " | grep -Po '(?<=Name: |Sample Specification: |device\.profile\.name = ).*'").split("\n")
 		found_dp_output = False
 		for index, item in enumerate(data):
-			if item.startswith("alsa_output.pci-0000_08_00.1."):
+			if item.startswith(VALVE_INDEX_BASE):
 				found_dp_output = True
 				sample_spec, profile = data[index + 1:index + 2 + 1] # Slice funniness
 				print(f"\tName: {item}")
@@ -87,15 +91,15 @@ def handle_valve_index_card_switching():
 				if "float32le" in sample_spec or "192000Hz" in sample_spec:
 					# We have to switch card profiles in order to get the sample rate set correctly
 					print("Incompatible sample spec detected, switching card profiles")
-					pactl("set-card-profile 0 output:hdmi-surround71-extra3") # Digital Surround 7.1 (HDMI 4) Output"
+					pactl(f"set-card-profile 0 {VALVE_INDEX_SURROUND_CARD_PROFILE}")
 					time.sleep(1) # Wait a moment
 		if not found_dp_output:
-			print("Couldn't find the DP output; swapping card to HDMI monitor to fix")
-			pactl("set-card-profile 0 output:hdmi-stereo-extra4") # Digital Stereo (HDMI 5) Output"
+			print("Couldn't find the DP output; swapping card to an unused profile to fix")
+			pactl(f"set-card-profile 0 {UNUSED_CARD_PROFILE}")
 		# If the Valve Index is plugged in, switch GPU audio output to it
-		pactl("set-card-profile 0 output:hdmi-stereo-extra3") # Digital Stereo (HDMI 4) Output"
+		pactl(f"set-card-profile 0 {VALVE_INDEX_CARD_PROFILE}")
 		# Wait a moment before set_output_device() tries to recreate the "combined" sink
 		time.sleep(1)
 	else:
-		# Otherwise, switch GPU audio output to the HDMI monitor
-		pactl("set-card-profile 0 output:hdmi-stereo-extra4") # "Digital Stereo (HDMI 5) Output"
+		# Otherwise, switch GPU audio output to the default output card profile
+		pactl(f"set-card-profile 0 {DEFAULT_CARD_PROFILE}")
