@@ -91,7 +91,7 @@ def handle_valve_index_card_switching():
 				if "float32le" in sample_spec or "192000Hz" in sample_spec:
 					# We have to switch card profiles in order to get the sample rate set correctly
 					print("Incompatible sample spec detected, switching card profiles")
-					pactl(f"set-card-profile 0 {VALVE_INDEX_SURROUND_CARD_PROFILE}")
+					pactl(f"set-card-profile 0 {UNUSED_CARD_PROFILE}")
 					time.sleep(1) # Wait a moment
 		if not found_dp_output:
 			print("Couldn't find the DP output; swapping card to an unused profile to fix")

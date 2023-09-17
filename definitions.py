@@ -2,17 +2,16 @@
 
 # Configuration
 
-VALVE_INDEX_BASE = "alsa_output.pci-0000_08_00.1."
-VALVE_INDEX_DP = "alsa_output.pci-0000_08_00.1.hdmi-stereo-extra3"
+VALVE_INDEX_BASE = "alsa_output.pci-0000_0b_00.1."
+VALVE_INDEX_DP = "alsa_output.pci-0000_0b_00.1.hdmi-stereo-extra1"
 VALVE_INDEX_MIC = "alsa_input.usb-Valve_Corporation_Valve_VR_Radio___HMD_Mic_46B7E4067C-LYM-01.mono-fallback"
 
 # A card profile you want to use for audio
-DEFAULT_CARD_PROFILE = "output:hdmi-stereo-extra4" # Digital Stereo (HDMI 5) Output
+DEFAULT_CARD_PROFILE = "output:hdmi-stereo" # Digital Stereo (HDMI) Output
 # Valve Index output card profile
-VALVE_INDEX_CARD_PROFILE = "output:hdmi-stereo-extra3" # Digital Stereo (HDMI 4) Output
-VALVE_INDEX_SURROUND_CARD_PROFILE = "output:hdmi-surround71-extra3" # Digital Surround 7.1 (HDMI 4) Output
+VALVE_INDEX_CARD_PROFILE = "output:hdmi-stereo-extra1" # Digital Stereo (HDMI 2) Output
 # An unused card profile for silent fixing
-UNUSED_CARD_PROFILE = "output:hdmi-stereo-extra4" # Digital Stereo (HDMI 5) Output
+UNUSED_CARD_PROFILE = "output:hdmi-stereo-extra3" # Digital Stereo (HDMI 4) Output
 
 AIRPODS = "bluez_sink.58_0A_D4_E7_09_C5.a2dp_sink"
 BT_SPEAKER = "bluez_sink.FC_58_FA_73_8C_31.a2dp_sink"
