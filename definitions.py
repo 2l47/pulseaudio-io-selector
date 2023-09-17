@@ -4,7 +4,7 @@
 
 VALVE_INDEX_BASE = "alsa_output.pci-0000_08_00.1."
 VALVE_INDEX_DP = "alsa_output.pci-0000_08_00.1.hdmi-stereo-extra3"
-VALVE_INDEX_MIC = "alsa_input.usb-Valve_Corporation_Valve_VR_Radio___HMD_Mic_46B7E4067C-LYM-01.multichannel-input"
+VALVE_INDEX_MIC = "alsa_input.usb-Valve_Corporation_Valve_VR_Radio___HMD_Mic_46B7E4067C-LYM-01.mono-fallback"
 
 # A card profile you want to use for audio
 DEFAULT_CARD_PROFILE = "output:hdmi-stereo-extra4" # Digital Stereo (HDMI 5) Output
