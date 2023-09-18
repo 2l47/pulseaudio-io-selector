@@ -10,8 +10,8 @@ import time
 
 
 
-def notify(message):
-	os.system(f"notify-send pulseaudio-io-selector \"{message}\"")
+def notify(message, urgency="normal"):
+	os.system(f"notify-send --urgency={urgency} pulseaudio-io-selector \"{message}\"")
 
 
 # Shortcut for running pactl with the provided arguments

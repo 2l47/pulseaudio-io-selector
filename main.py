@@ -51,7 +51,7 @@ def set_output_device():
 			# On the first run, this will remove any sinks (outputs) we've previously created, avoiding potential duplicates
 			if priority != CURRENT_COMBINED_SINK_OUTPUT:
 				print(RED + f"Recreating the sink because new priority {priority} != old combined sink slave {CURRENT_COMBINED_SINK_OUTPUT}")
-				notify("Recreating sinks; some applications may need to reconnect to pulseaudio.")
+				notify("Recreating sinks; some applications may need to reconnect to pulseaudio.", urgency="critical")
 				remove_sinks()
 				add_sinks(priority)
 				CURRENT_COMBINED_SINK_OUTPUT = priority
