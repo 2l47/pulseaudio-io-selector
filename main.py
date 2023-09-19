@@ -41,9 +41,9 @@ def set_output_device():
 			print(RED + f"Current combined sink (output): {CURRENT_COMBINED_SINK_OUTPUT}")
 			print(GREEN + f"Selecting {priority} as the default sink (output)")
 			pactl(f"set-default-sink {priority}")
-			# If this is the Valve Index, set the volume to 50%
+			# If this is the Valve Index, set the volume to 75%
 			if priority == VALVE_INDEX_DP:
-				pactl(f"set-sink-volume {priority} 32768")
+				pactl(f"set-sink-volume {priority} 49152")
 			# and 75% for my Bluetooth speaker
 			elif priority == BT_SPEAKER:
 				pactl(f"set-sink-volume {priority} 49152")
