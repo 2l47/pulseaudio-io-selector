@@ -135,24 +135,28 @@ signal.signal(signal.SIGINT, sigint)
 
 # Main program logic - just run until terminated or an error is encountered
 if __name__ == "__main__":
-	# Spawn a thread to discover Bluetooth devices
-	t = threading.Thread(target=bt_scan, args=())
-	t.start()
-	# Spawn a thread to automatically connect to Bluetooth devices
-	t = threading.Thread(target=bt_connect, args=(), daemon=True)
-	t.start()
-	while not should_exit:
-		# Handles switching the GPU to the correct profile, ensuring that the output is actually available for the combined sink
-		handle_valve_index_card_switching()
+	try:
+		# Spawn a thread to discover Bluetooth devices
+		t = threading.Thread(target=bt_scan, args=())
+		t.start()
+		# Spawn a thread to automatically connect to Bluetooth devices
+		t = threading.Thread(target=bt_connect, args=(), daemon=True)
+		t.start()
+		while not should_exit:
+			# Handles switching the GPU to the correct profile, ensuring that the output is actually available for the combined sink
+			handle_valve_index_card_switching()
 
-		set_output_device()
-		handle_recording()
-		print()
-		set_input_device()
+			set_output_device()
+			handle_recording()
+			print()
+			set_input_device()
 
-		print(BLUE + "\nSleeping...")
-		time.sleep(1)
-		print("\n" * 10)
+			print(BLUE + "\nSleeping...")
+			time.sleep(1)
+			print("\n" * 10)
+	except Exception as ex:
+		notify(f"Encountered an exception: {ex}", urgency="critical")
+		raise
 # from main import *
 else:
 	functions = [
