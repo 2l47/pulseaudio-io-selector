@@ -50,6 +50,12 @@ def get_cookie():
 	return result.rstrip()
 
 
+# Get the current source (input)
+def get_current_input():
+	result = pactl("info", " | grep -Po '(?<=Default Source: ).*'")
+	return result.rstrip()
+
+
 # Get available sinks (outputs)
 def get_outputs():
 	result = pactl("list sinks", " | grep Name:")

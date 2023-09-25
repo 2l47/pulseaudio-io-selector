@@ -4,7 +4,7 @@
 
 from colors import *
 from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
-from helpers import add_sinks, get_cookie, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, vr_running
+from helpers import add_sinks, get_cookie, get_current_input, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, vr_running
 import os
 import pprint
 import shlex
@@ -69,9 +69,15 @@ def set_input_device():
 		if priority in available_inputs:
 			# Set this as the default source (input)
 			# But if VR isn't running, don't use the Valve Index mic
-			if priority == VALVE_INDEX_MIC and (not vr_running()):
-				print(ITALIC + ORANGE + "Not using the Valve Index microphone because SteamVR is not running.")
-				continue
+			if priority == VALVE_INDEX_MIC:
+				current_input = get_current_input()
+				print(ITALIC + RED + f"[VR] The current input is {current_input}.")
+				if not vr_running():
+					print(ITALIC + ORANGE + "Not using the Valve Index microphone because SteamVR is not running.")
+					continue
+				elif current_input == "recording.monitor":
+					print(ITALIC + RED + "[VR] Allowing VR micspam.")
+					break
 			print(GREEN + f"Selecting {priority} as the default source (input)")
 			pactl(f"set-default-source {priority}")
 			# If this is our USB mic, set the gain to 11.00 dB
