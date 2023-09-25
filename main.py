@@ -104,12 +104,8 @@ def bt_scan():
 	# The child process shouldn't terminate on its own -- if it does, exit the program.
 	print(f"bluetoothctl scan process terminated unexpectedly, exiting! Process output:")
 	print(output.decode())
-	# Python 3.10 is required for proper signal handling.
-	"""
 	# Send SIGHUP to the main thread.
-	#_thread.interrupt_main(signal.SIGHUP)
-	"""
-	_thread.interrupt_main()
+	_thread.interrupt_main(signal.SIGHUP)
 
 
 def bt_connect():
@@ -121,7 +117,6 @@ def bt_connect():
 			time.sleep(BT_CONNECT_INTERVAL)
 
 
-"""
 # Handle SIGHUP
 def sighup(signum, frame):
 	# Always "SIGHUP" but eh
@@ -130,15 +125,6 @@ def sighup(signum, frame):
 	global should_exit
 	should_exit = True
 signal.signal(signal.SIGHUP, sighup)
-"""
-# Handle SIGINT
-def sigint(signum, frame):
-	# Always "SIGINT" but eh
-	signame = signal.Signals(signum).name
-	print(RED + f"Caught {signame}, exiting...")
-	global should_exit
-	should_exit = True
-signal.signal(signal.SIGINT, sigint)
 
 
 # Main program logic - just run until terminated or an error is encountered
