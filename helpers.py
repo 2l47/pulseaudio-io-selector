@@ -44,6 +44,12 @@ def add_sinks(combined_output):
 	#pactl(f"load-module module-loopback source={MICROPHONE} sink=recording latency_msec=1")
 
 
+# Get the current cookie
+def get_cookie():
+	result = pactl("info", " | grep -Po '(?<=Cookie: ).*'")
+	return result.rstrip()
+
+
 # Get available sinks (outputs)
 def get_outputs():
 	result = pactl("list sinks", " | grep Name:")

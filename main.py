@@ -4,7 +4,7 @@
 
 from colors import *
 from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
-from helpers import add_sinks, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, vr_running
+from helpers import add_sinks, get_cookie, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, vr_running
 import os
 import pprint
 import shlex
@@ -23,6 +23,8 @@ CURRENT_COMBINED_SINK_OUTPUT = None
 
 global should_exit
 should_exit = False
+
+cookie = get_cookie()
 
 
 def set_output_device():
@@ -150,6 +152,12 @@ if __name__ == "__main__":
 			handle_recording()
 			print()
 			set_input_device()
+
+			# Pulseaudio crash detection
+			new_cookie = get_cookie()
+			if cookie != new_cookie:
+				print(RED + f"Old cookie {cookie}, new cookie {new_cookie}")
+				raise RuntimeError("Pulseaudio has crashed (cookie changed)!")
 
 			print(BLUE + "\nSleeping...")
 			time.sleep(1)
