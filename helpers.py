@@ -47,6 +47,8 @@ def add_sinks(combined_output):
 # Get the current cookie
 def get_cookie():
 	result = pactl("info", " | grep -Po '(?<=Cookie: ).*'")
+	if result == "":
+		raise RuntimeError("Pulseaudio is not running!")
 	return result.rstrip()
 
 

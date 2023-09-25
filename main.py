@@ -102,10 +102,14 @@ def bt_scan():
 	# This will block this thread until the child process exits.
 	output = subprocess.check_output("bluetoothctl scan on", shell=True)
 	# The child process shouldn't terminate on its own -- if it does, exit the program.
-	print(f"bluetoothctl scan process terminated unexpectedly, exiting! Process output:")
-	print(output.decode())
-	# Send SIGHUP to the main thread.
-	_thread.interrupt_main(signal.SIGHUP)
+	if not should_exit:
+		print(f"bluetoothctl scan process terminated unexpectedly, exiting! Process output:")
+		print(output.decode())
+		# Send SIGHUP to the main thread.
+		_thread.interrupt_main(signal.SIGHUP)
+	else:
+		print("bluetoothctl was terminated during shutdown. Process output:")
+		print(output.decode())
 
 
 def bt_connect():
@@ -156,6 +160,8 @@ if __name__ == "__main__":
 			print("\n" * 20)
 	except Exception as ex:
 		notify(f"Encountered an exception: {ex}", urgency="critical")
+		should_exit = True
+		os.system("pkill bluetoothctl")
 		raise
 # from main import *
 else:
