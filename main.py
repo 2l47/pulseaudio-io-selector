@@ -166,8 +166,8 @@ if __name__ == "__main__":
 				raise RuntimeError("Pulseaudio has crashed (cookie changed)!")
 
 			print(BLUE + "\nSleeping...")
-			time.sleep(1)
-			print("\n" * 10)
+			time.sleep(5)
+			print("\n" * 20)
 	except Exception as ex:
 		notify(f"Encountered an exception: {ex}", urgency="critical")
 		raise
