@@ -25,6 +25,7 @@ global should_exit
 should_exit = False
 
 cookie = get_cookie()
+vr_was_running = False
 
 
 def set_output_device():
@@ -72,10 +73,13 @@ def set_input_device():
 			if priority == VALVE_INDEX_MIC:
 				current_input = get_current_input()
 				print(ITALIC + RED + f"[VR] The current input is {current_input}.")
-				if not steamvr_running():
+				vr_running = steamvr_running()
+				print(ITALIC + RED + f"[VR] SteamVR running: {vr_running}")
+				if not vr_running:
 					print(ITALIC + ORANGE + "Not using the Valve Index microphone because SteamVR is not running.")
 					continue
-				elif current_input == "recording.monitor":
+				# If VR has been running, allow VR micspam. Otherwise, we'll use the Valve Index microphone.
+				if vr_was_running and current_input == "recording.monitor":
 					print(ITALIC + RED + "[VR] Allowing VR micspam.")
 					break
 			print(GREEN + f"Selecting {priority} as the default source (input)")
@@ -145,6 +149,7 @@ if __name__ == "__main__":
 			handle_valve_index_card_switching()
 
 			set_output_device()
+			vr_was_running = steamvr_running()
 			handle_recording()
 			print()
 			set_input_device()
