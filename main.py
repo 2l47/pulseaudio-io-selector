@@ -4,7 +4,7 @@
 
 from colors import *
 from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
-from helpers import add_sinks, get_cookie, get_current_input, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, vr_running
+from helpers import add_sinks, get_cookie, get_current_input, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, steamvr_running
 import os
 import pprint
 import shlex
@@ -37,7 +37,7 @@ def set_output_device():
 		if priority in available_outputs:
 			# Set this as the default sink (output)
 			# But if VR isn't running, don't use the Valve Index speakers
-			if priority == VALVE_INDEX_DP and not vr_running():
+			if priority == VALVE_INDEX_DP and not steamvr_running():
 				print(ITALIC + ORANGE + "Not using the Valve Index speakers because SteamVR is not running.")
 				continue
 			print(RED + f"Current combined sink (output): {CURRENT_COMBINED_SINK_OUTPUT}")
@@ -72,7 +72,7 @@ def set_input_device():
 			if priority == VALVE_INDEX_MIC:
 				current_input = get_current_input()
 				print(ITALIC + RED + f"[VR] The current input is {current_input}.")
-				if not vr_running():
+				if not steamvr_running():
 					print(ITALIC + ORANGE + "Not using the Valve Index microphone because SteamVR is not running.")
 					continue
 				elif current_input == "recording.monitor":
@@ -169,7 +169,7 @@ else:
 		"pactl",
 		"get_outputs", "get_inputs",
 		"set_output_device", "set_input_device",
-		"handle_valve_index_card_switching", "vr_running",
+		"handle_valve_index_card_switching", "steamvr_running",
 		"remove_sinks", "add_sinks",
 		"handle_recording",
 	]

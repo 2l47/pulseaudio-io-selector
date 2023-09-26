@@ -77,7 +77,7 @@ def get_inputs():
 
 
 # Returns whether SteamVR is running (should we switch to the headset?)
-def vr_running():
+def steamvr_running():
 	try:
 		return bool(subprocess.check_output("pgrep vrmonitor", shell=True))
 	except subprocess.CalledProcessError:
@@ -88,10 +88,10 @@ def handle_valve_index_card_switching():
 	# Switch the graphics card audio output from the monitor speaker to the Valve Index when VR is running
 	print(BLUE + "Configuring GPU DisplayPort audio output...")
 	index_connected = VALVE_INDEX_MIC in get_inputs()
-	steamvr_running = vr_running()
+	vr_running = steamvr_running()
 	print(BLUE + f"Valve Index mic available: {index_connected}")
-	print(BLUE + f"SteamVR running: {steamvr_running}")
-	if index_connected and steamvr_running:
+	print(BLUE + f"SteamVR running: {vr_running}")
+	if index_connected and vr_running:
 		print("Valve Index mic detected, checking card profile")
 		data = pactl("list sinks", " | grep -Po '(?<=Name: |Sample Specification: |device\.profile\.name = ).*'").split("\n")
 		found_dp_output = False
