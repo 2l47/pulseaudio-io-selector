@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-tmux new -ds "pulseaudio-io-selector" "~/Desktop/src/pulseaudio-io-selector/main.py"
+cd ~/Desktop/src/pulseaudio-io-selector
+tmux new -ds "pulseaudio-io-selector" "./loop.py"
