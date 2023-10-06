@@ -10,7 +10,8 @@ import time
 
 
 
-def notify(message, urgency="normal", duration=10000, title="pulseaudio-io-selector"):
+def notify(message, urgency="normal", duration=10.000, title="pulseaudio-io-selector"):
+	duration = int(duration * 1000)
 	os.system(f"notify-send --urgency={urgency} --expire-time={duration} \"{title}\" \"{message}\"")
 
 

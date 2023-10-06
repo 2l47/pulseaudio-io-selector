@@ -3,7 +3,7 @@
 # Configuration
 
 # How long to display important notifications
-CRIT_DURATION = 60 * 1000
+CRIT_DURATION = 60.000
 
 VALVE_INDEX_BASE = "alsa_output.pci-0000_0b_00.1."
 VALVE_INDEX_DP = "alsa_output.pci-0000_0b_00.1.hdmi-stereo-extra1"

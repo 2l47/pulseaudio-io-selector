@@ -26,9 +26,9 @@ print("Starting loop...")
 try:
 	while True:
 		os.system(f"python3 ./main.py {' '.join(sys.argv[1:])}")
-		notify("Relaunching pulseaudio-selector in 5 seconds...", title="pulseaudio-io-selector loop", duration=5000)
+		notify("Relaunching pulseaudio-io-selector in 5 seconds...", title="pulseaudio-io-selector loop", duration=5.000)
 		time.sleep(5)
-		notify("Relaunching pulseaudio-selector.", title="pulseaudio-io-selector loop", duration=2500)
+		notify("Relaunching pulseaudio-io-selector.", title="pulseaudio-io-selector loop", duration=15.000)
 except:
 	raise
 finally:
