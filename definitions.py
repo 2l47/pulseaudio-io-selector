@@ -2,6 +2,9 @@
 
 # Configuration
 
+# How long to display important notifications
+CRIT_DURATION = 60 * 1000
+
 VALVE_INDEX_BASE = "alsa_output.pci-0000_0b_00.1."
 VALVE_INDEX_DP = "alsa_output.pci-0000_0b_00.1.hdmi-stereo-extra1"
 VALVE_INDEX_MIC = "alsa_input.usb-Valve_Corporation_Valve_VR_Radio___HMD_Mic_46B7E4067C-LYM-01.mono-fallback"

@@ -3,7 +3,7 @@
 # This script automatically adjusts the default input and output device for pulseaudio depending on what sinks (outputs) and sources (inputs) are available.
 
 from colors import *
-from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
+from definitions import bluetooth_devices, BT_CONNECT_INTERVAL, BT_SPEAKER, CRIT_DURATION, inputs, outputs, VALVE_INDEX_DP, VALVE_INDEX_MIC
 from helpers import add_sinks, get_cookie, get_current_input, get_inputs, get_outputs, handle_valve_index_card_switching, notify, pactl, remove_sinks, steamvr_running
 import os
 import pprint
@@ -54,7 +54,7 @@ def set_output_device():
 			# On the first run, this will remove any sinks (outputs) we've previously created, avoiding potential duplicates
 			if priority != CURRENT_COMBINED_SINK_OUTPUT:
 				print(RED + f"Recreating the sink because new priority {priority} != old combined sink slave {CURRENT_COMBINED_SINK_OUTPUT}")
-				notify(f"Recreating sinks; some applications may need to reconnect to pulseaudio. Priority changed from {CURRENT_COMBINED_SINK_OUTPUT} -> {priority}", urgency="critical")
+				notify(f"Recreating sinks; some applications may need to reconnect to pulseaudio. Priority changed from {CURRENT_COMBINED_SINK_OUTPUT} -> {priority}", duration=CRIT_DURATION)
 				remove_sinks()
 				add_sinks(priority)
 				CURRENT_COMBINED_SINK_OUTPUT = priority
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 			time.sleep(5)
 			print("\n" * 20)
 	except Exception as ex:
-		notify(f"Encountered an exception: {ex}", urgency="critical")
+		notify(f"Encountered an exception: {ex}", duration=CRIT_DURATION)
 		should_exit = True
 		os.system("pkill bluetoothctl")
 		raise
